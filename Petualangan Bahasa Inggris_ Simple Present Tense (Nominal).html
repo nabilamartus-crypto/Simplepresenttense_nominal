@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Petualangan Bahasa Inggris: Simple Present Tense (Nominal)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+        
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandYellow: '#FFD166',
+                        brandGreen: '#06D6A0',
+                        brandBlue: '#118AB2',
+                        brandRed: '#EF476F',
+                        brandPurple: '#8338EC',
+                        brandDark: '#073B4C'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        nunito: ['Nunito', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        .heading-font {
+            font-family: 'Fredoka', cursive;
+        }
+
+        .bounce-hover:hover {
+            transform: translateY(-4px) scale(1.02);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-bounce:active {
+            transform: translateY(2px) scale(0.98);
+        }
+
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border: 4px solid #ffffff;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(6, 214, 160, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(6, 214, 160, 0.9); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #118AB2;
+            border-radius: 10px;
+        }
+        html, body { height: 100%; }
+        body { min-height: 100dvh; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+        textarea { user-select: text; }
+        header { top: env(safe-area-inset-top, 0px) !important; }
+        main { align-items: stretch !important; padding: 0.5rem !important; }
+        main > div { max-width: none !important; display: flex; }
+        main > div > section { width: 100%; min-height: calc(100dvh - 5.5rem); display: flex; flex-direction: column; justify-content: center; border-radius: 1.5rem; }
+        main > div > section.hidden { display: none; }
+        @media (min-width: 1024px) {
+            #question-text { font-size: 2.75rem; }
+            #question-icon { font-size: 4.5rem; }
+            #options-container button { font-size: 1.75rem; padding: 1.75rem; }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-800 antialiased relative overflow-x-hidden">
+
+    <!-- Top Navigation Bar -->
+    <header class="w-full bg-white/80 backdrop-blur-md border-b-4 border-slate-200 px-4 py-3 sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-brandYellow rounded-2xl flex items-center justify-center text-xl text-slate-800 shadow-md font-bold">
+                    🌟
+                </div>
+                <div>
+                    <h1 class="heading-font text-lg md:text-xl font-bold text-brandBlue leading-none">English Adventure</h1>
+                    <p class="text-xs text-slate-500 font-semibold">Kelas 6 SD - Simple Present Tense</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <!-- Sound Toggle -->
+                <button id="btn-sound" onclick="toggleSound()" class="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-2xl text-slate-700 transition flex items-center gap-1 font-bold text-sm">
+                    <span id="sound-icon">🔊</span>
+                </button>
+
+                <!-- Fullscreen Toggle Button -->
+                <button onclick="toggleFullScreen()" class="p-2.5 bg-brandPurple hover:bg-purple-700 text-white rounded-2xl transition flex items-center gap-2 font-bold text-sm shadow-md bounce-hover btn-bounce">
+                    <span id="fs-icon">⛶</span>
+                    <span class="hidden md:inline">Layar Penuh</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Canvas Confetti -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Main Container -->
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="w-full max-w-4xl mx-auto">
+
+            <!-- 1. LOGIN SCREEN -->
+            <section id="screen-login" class="glass-card rounded-3xl p-6 md:p-10 text-center relative overflow-hidden transition-all duration-300">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-200 rounded-full blur-2xl opacity-70"></div>
+                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-sky-200 rounded-full blur-2xl opacity-70"></div>
+
+                <div class="inline-block p-4 bg-brandBlue/10 rounded-full mb-4">
+                    <span class="text-5xl">🎒</span>
+                </div>
+
+                <h2 class="heading-font text-3xl md:text-4xl text-brandBlue font-bold mb-2">Selamat Datang, Bintang Sekolah!</h2>
+                <p class="text-slate-600 mb-8 max-w-md mx-auto">Siap belajar Simple Present Tense (Nominal) dengan menyenangkan? Isilah identitasmu di bawah ini!</p>
+
+                <form id="form-login" onsubmit="submitLogin(event)" class="max-w-md mx-auto space-y-6 text-left">
+                    <div>
+                        <label class="block heading-font text-slate-700 text-lg mb-2">👤Nama Lengkap:</label>
+                        <input type="text" id="input-nama" required placeholder="Masukkan nama lengkapmu..." 
+                            class="w-full px-5 py-4 rounded-2xl border-2 border-slate-300 focus:border-brandBlue focus:outline-none text-slate-800 text-lg shadow-inner transition">
+                    </div>
+
+                    <div>
+                        <label class="block heading-font text-slate-700 text-lg mb-2">🏫Pilih Kelas:</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="relative flex items-center justify-center p-4 rounded-2xl border-2 border-slate-200 cursor-pointer hover:bg-slate-50 transition [&:has(input:checked)]:border-brandGreen [&:has(input:checked)]:bg-green-50">
+                                <input type="radio" name="kelas" value="6A" required class="sr-only">
+                                <span class="heading-font text-xl font-bold text-slate-700">Kelas 6A</span>
+                            </label>
+                            <label class="relative flex items-center justify-center p-4 rounded-2xl border-2 border-slate-200 cursor-pointer hover:bg-slate-50 transition [&:has(input:checked)]:border-brandGreen [&:has(input:checked)]:bg-green-50">
+                                <input type="radio" name="kelas" value="6B" required class="sr-only">
+                                <span class="heading-font text-xl font-bold text-slate-700">Kelas 6B</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-4 bg-brandGreen hover:bg-emerald-500 text-white heading-font text-xl rounded-2xl shadow-lg shadow-green-200 transition transform hover:-translate-y-1 btn-bounce flex items-center justify-center gap-3">
+                        <span>Mulai Belajar & Bermain</span>
+                        ➡️
+                    </button>
+                </form>
+            </section>
+
+
+            <!-- 2. MATERI SCREEN -->
+            <section id="screen-materi" class="hidden glass-card rounded-3xl p-6 md:p-8 space-y-8 transition-all duration-300">
+                <!-- Header Materi -->
+                <div class="flex flex-wrap justify-between items-center gap-4 border-b pb-4">
+                    <div>
+                        <span class="bg-brandBlue/10 text-brandBlue px-3 py-1 rounded-full text-sm font-bold">Materi Ringkas</span>
+                        <h2 class="heading-font text-2xl md:text-3xl text-slate-800 font-bold mt-1">Simple Present Tense (Nominal)</h2>
+                    </div>
+                    <div class="text-right">
+                        <span id="user-tag" class="bg-amber-100 text-amber-800 font-bold px-4 py-2 rounded-2xl text-sm border border-amber-200">
+                            Ahmad - 6A
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Intro Explanation -->
+                <div class="bg-blue-50 border-l-4 border-brandBlue p-4 rounded-r-2xl">
+                    <p class="text-slate-700 font-medium">
+                        💡 <b>Apa itu Kalimat Nominal?</b> Kalimat nominal adalah kalimat yang <b>TIDAK menggunakan kata kerja aksi</b> (seperti makan/tidur), melainkan menghubungkan Subjek dengan <b>Kata Sifat (Adjective)</b> atau <b>Kata Benda/Profesi (Noun)</b> menggunakan <b>To Be (am, is, are)</b>.
+                    </p>
+                </div>
+
+                <!-- Penggunaan To Be Grid -->
+                <div>
+                    <h3 class="heading-font text-xl text-brandBlue mb-4 flex items-center gap-2">
+                        <span>1. Pasangan Subjek & To Be</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- AM -->
+                        <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 text-center hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-amber-400 text-white rounded-full flex items-center justify-center mx-auto heading-font text-2xl font-bold mb-2">
+                                am
+                            </div>
+                            <p class="heading-font text-lg text-amber-900 font-bold">Subjek: I</p>
+                            <p class="text-xs text-slate-600 mt-1">Digunakan khusus untuk diri sendiri (Saya).</p>
+                        </div>
+
+                        <!-- IS -->
+                        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 text-center hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto heading-font text-2xl font-bold mb-2">
+                                is
+                            </div>
+                            <p class="heading-font text-lg text-emerald-900 font-bold">Subjek Tunggal (1 Orang/Benda)</p>
+                            <p class="text-xs text-slate-600 mt-1"><b>He, She, It</b>, serta: <i>father, mother, teacher, student, baby, brother, sister, principal, friend (tunggal)</i>.</p>
+                        </div>
+
+                        <!-- ARE -->
+                        <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4 text-center hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-sky-500 text-white rounded-full flex items-center justify-center mx-auto heading-font text-2xl font-bold mb-2">
+                                are
+                            </div>
+                            <p class="heading-font text-lg text-sky-900 font-bold">Subjek Jamak (>1 Orang)</p>
+                            <p class="text-xs text-slate-600 mt-1"><b>You, We, They</b>, serta nama orang banyak (contoh: <i>Budi and Ani</i>, <i>friends</i>).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rumus & Contoh Kalimat Bergambar -->
+                <div>
+                    <h3 class="heading-font text-xl text-brandBlue mb-4 flex items-center gap-2">
+                        <span>2. Rumus & Contoh Kalimat Bergambar</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Positif Card -->
+                        <div class="bg-white border-2 border-emerald-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition">
+                            <div class="bg-emerald-500 px-4 py-3 text-white font-bold heading-font flex justify-between items-center">
+                                <span>(+) Kalimat Positif</span>
+                                <span class="w-7 h-7 bg-white text-emerald-600 rounded-full flex items-center justify-center text-sm font-black">+</span>
+                            </div>
+                            <div class="w-full h-36 flex items-center justify-center text-7xl bg-emerald-100">👩‍🏫</div>
+                            <div class="p-4 space-y-2">
+                                <span class="text-xs bg-slate-100 text-slate-600 font-semibold px-2.5 py-1 rounded-lg block text-center">Subject + am/is/are + Nominal</span>
+                                <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-sm text-emerald-900">
+                                    <p class="font-bold">"My father <span class="underline decoration-2 text-emerald-600">is</span> a teacher."</p>
+                                    <p class="text-xs text-slate-500 italic mt-0.5">(Ayahku adalah seorang guru.)</p>
+                                </div>
+                                <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-sm text-emerald-900">
+                                    <p class="font-bold">"She <span class="underline decoration-2 text-emerald-600">is</span> smart."</p>
+                                    <p class="text-xs text-slate-500 italic mt-0.5">(Dia pintar.)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Negatif Card -->
+                        <div class="bg-white border-2 border-rose-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition">
+                            <div class="bg-rose-500 px-4 py-3 text-white font-bold heading-font flex justify-between items-center">
+                                <span>(-) Kalimat Negatif</span>
+                                <span class="w-7 h-7 bg-white text-rose-600 rounded-full flex items-center justify-center text-sm font-black">-</span>
+                            </div>
+                            <div class="w-full h-36 flex items-center justify-center text-7xl bg-rose-100">👶</div>
+                            <div class="p-4 space-y-2">
+                                <span class="text-xs bg-slate-100 text-slate-600 font-semibold px-2.5 py-1 rounded-lg block text-center">Subject + am/is/are + NOT + Nominal</span>
+                                <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3 text-sm text-rose-900">
+                                    <p class="font-bold">"The baby <span class="underline decoration-2 text-rose-600">is not</span> lazy."</p>
+                                    <p class="text-xs text-slate-500 italic mt-0.5">(Bayi itu tidak malas.)</p>
+                                </div>
+                                <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3 text-sm text-rose-900">
+                                    <p class="font-bold">"They <span class="underline decoration-2 text-rose-600">are not</span> sad."</p>
+                                    <p class="text-xs text-slate-500 italic mt-0.5">(Mereka tidak sedih.)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tanya Card -->
+                        <div class="bg-white border-2 border-amber-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition">
+                            <div class="bg-amber-500 px-4 py-3 text-white font-bold heading-font flex justify-between items-center">
+                                <span>(?) Kalimat Tanya</span>
+                                <span class="w-7 h-7 bg-white text-amber-600 rounded-full flex items-center justify-center text-sm font-black">?</span>
+                            </div>
+                            <div class="w-full h-36 flex items-center justify-center text-7xl bg-amber-100">🧒</div>
+                            <div class="p-4 space-y-2">
+                                <span class="text-xs bg-slate-100 text-slate-600 font-semibold px-2.5 py-1 rounded-lg block text-center">Am/Is/Are + Subject + Nominal?</span>
+                                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-sm text-amber-900">
+                                    <p class="font-bold">"<span class="underline decoration-2 text-amber-600">Is</span> your sister diligent?"</p>
+                                    <p class="text-xs text-slate-500 italic mt-0.5">(Apakah saudaramu rajin?)</p>
+                                </div>
+                                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-sm text-amber-900">
+                                    <p class="font-bold">"<span class="underline decoration-2 text-amber-600">Are</span> you happy?"</p>
+                                    <p class="text-xs text-slate-500 italic mt-0.5">(Apakah kamu senang?)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ready Button -->
+                <div class="pt-4 text-center">
+                    <button onclick="startGame()" class="px-8 py-4 bg-brandYellow hover:bg-amber-400 text-slate-900 heading-font text-2xl rounded-2xl shadow-lg transition bounce-hover btn-bounce pulse-glow inline-flex items-center gap-3">
+                        <span>🎮 Mulai Latihan Game!</span>
+                    </button>
+                </div>
+            </section>
+
+
+            <!-- 3. GAME QUIZ SCREEN -->
+            <section id="screen-game" class="hidden glass-card rounded-3xl p-6 md:p-8 transition-all duration-300">
+                <!-- Top Quiz Bar -->
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <span id="question-counter" class="text-sm heading-font font-bold text-brandBlue bg-blue-100 px-3 py-1 rounded-full">
+                            Soal 1 dari 15
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-right">
+                            <span class="text-xs text-slate-500 font-bold block">SKOR</span>
+                            <span id="score-text" class="heading-font text-2xl font-bold text-brandGreen">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden mb-8 border border-slate-200">
+                    <div id="progress-bar" class="bg-gradient-to-r from-brandBlue to-brandGreen h-full w-0 transition-all duration-500"></div>
+                </div>
+
+                <!-- Question Box -->
+                <div class="bg-slate-50 border-2 border-slate-200 rounded-3xl p-6 md:p-8 text-center mb-8 relative">
+                    <div id="question-icon" class="text-4xl mb-3">❓</div>
+                    <h3 id="question-text" class="heading-font text-2xl md:text-3xl text-slate-800 font-bold mb-2">
+                        Loading Soal...
+                    </h3>
+                    <p id="question-translate" class="text-sm text-slate-500 italic">
+                        (Arti kalimat...)
+                    </p>
+                </div>
+
+                <!-- Answer Options -->
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Options injected via JavaScript -->
+                </div>
+
+                <!-- Feedback Banner -->
+                <div id="feedback-banner" class="hidden mt-6 p-4 rounded-2xl text-center font-bold text-lg transition-all duration-300">
+                    <!-- Dynamic feedback message -->
+                </div>
+            </section>
+
+
+            <!-- 4. RESULT & ASSESSMENT SCREEN -->
+            <section id="screen-result" class="hidden glass-card rounded-3xl p-6 md:p-10 text-center space-y-8 transition-all duration-300">
+                <div class="inline-block p-4 bg-yellow-100 rounded-full">
+                    <span id="result-badge-emoji" class="text-6xl">🏆</span>
+                </div>
+
+                <div>
+                    <h2 class="heading-font text-3xl md:text-4xl text-slate-800 font-bold">Hasil Asesmen Pembelajaran</h2>
+                    <p class="text-slate-500 mt-1">Laporan Capaian Siswa SD Kelas 6</p>
+                </div>
+
+                <!-- Student Info Card -->
+                <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-6 max-w-md mx-auto text-left grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="text-xs text-slate-400 font-bold block">NAMA SISWA</span>
+                        <span id="res-nama" class="font-bold text-slate-800 text-lg">Ahmad</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 font-bold block">KELAS</span>
+                        <span id="res-kelas" class="font-bold text-slate-800 text-lg">6A</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 font-bold block">SKOR AKHIR</span>
+                        <span id="res-skor" class="heading-font text-3xl font-bold text-brandBlue">100/100</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 font-bold block">PREDIKAT</span>
+                        <span id="res-predikat" class="heading-font text-sm font-bold text-emerald-600 bg-emerald-100 px-2.5 py-1 rounded-lg inline-block mt-1">
+                            Bintang Utama ⭐⭐⭐
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Detail Benar / Salah -->
+                <div class="flex justify-center gap-6 text-sm font-bold">
+                    <div class="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-xl">
+                        ✅
+                        <span>Benar: <span id="res-benar">15</span></span>
+                    </div>
+                    <div class="flex items-center gap-2 text-rose-600 bg-rose-50 px-4 py-2 rounded-xl">
+                        ❌
+                        <span>Salah: <span id="res-salah">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Kirim Hasil -->
+                <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-6 max-w-xl mx-auto text-left space-y-4">
+                    <h3 class="heading-font text-sky-900 font-bold text-lg">📨 Kirim Hasilmu ke Guru</h3>
+                    <p class="text-xs text-slate-600">Tekan tombol hijau untuk mengirim hasilmu lewat WhatsApp. Atau salin kode di bawah lalu kirim ke gurumu.</p>
+                    <textarea id="result-code" readonly rows="3" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 bg-white font-mono text-slate-600 focus:outline-none"></textarea>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="sendWA()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition btn-bounce">💬 Kirim lewat WhatsApp</button>
+                        <button onclick="copyCode(this)" class="flex-1 py-2.5 bg-brandBlue hover:bg-sky-700 text-white font-bold text-sm rounded-xl transition btn-bounce">📋 Salin Kode</button>
+                        <button onclick="toggleDetailAnswerModal()" class="flex-1 py-2.5 bg-slate-700 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition btn-bounce">📝 Rincian Jawaban</button>
+                    </div>
+                </div>
+
+                <!-- Restart Button -->
+                <div class="pt-2">
+                    <button onclick="resetGame()" class="px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl transition inline-flex items-center gap-2 btn-bounce">
+                        🔄
+                        <span>Ulangi Latihan</span>
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Detail Answers Modal -->
+    <div id="modal-details" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="p-5 border-b flex justify-between items-center bg-slate-50">
+                <h3 class="heading-font text-xl font-bold text-slate-800">Rincian Jawaban Soal</h3>
+                <button onclick="toggleDetailAnswerModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center">
+                    ✕
+                </button>
+            </div>
+            <div id="modal-details-content" class="p-6 overflow-y-auto space-y-3">
+                <!-- Answer details injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- SOUND EFFECTS ENGINE (Web Audio API) ---
+        let soundEnabled = true;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                // Happy Arpeggio
+                const now = audioCtx.currentTime;
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
+
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } else if (type === 'wrong') {
+                // Gentle Low Buzz
+                const now = audioCtx.currentTime;
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.setValueAtTime(140, now + 0.15);
+
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'win') {
+                // Fanfare
+                const now = audioCtx.currentTime;
+                const freqs = [440, 554.37, 659.25, 880];
+                freqs.forEach((f, i) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = 'triangle';
+                    o.frequency.value = f;
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    g.gain.setValueAtTime(0.2, now + i * 0.12);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.4);
+                    o.start(now + i * 0.12);
+                    o.stop(now + i * 0.12 + 0.4);
+                });
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            icon.textContent = soundEnabled ? '🔊' : '🔇';
+        }
+
+        // Fullscreen Toggle
+        function enterFullscreen() {
+            const el = document.documentElement;
+            const f = el.requestFullscreen || el.webkitRequestFullscreen;
+            if (f && !document.fullscreenElement && !document.webkitFullscreenElement) {
+                try { const p = f.call(el); if (p && p.catch) p.catch(() => {}); } catch (e) {}
+            }
+        }
+        function toggleFullScreen() {
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+            } else { enterFullscreen(); }
+        }
+        document.addEventListener('fullscreenchange', () => {
+            document.getElementById('fs-icon').textContent = document.fullscreenElement ? '🗗' : '⛶';
+        });
+        // 15 SOAL LATIHAN
+        const questionsData = [
+            {
+                id: 1,
+                question: "My father _____ a diligent teacher.",
+                translate: "Ayahku adalah seorang guru yang rajin.",
+                options: ["am", "is", "are", "not"],
+                answer: "is",
+                icon: "👨‍🏫"
+            },
+            {
+                id: 2,
+                question: "I _____ happy to see my new friend.",
+                translate: "Saya senang bertemu teman baru saya.",
+                options: ["is", "are", "am", "be"],
+                answer: "am",
+                icon: "😊"
+            },
+            {
+                id: 3,
+                question: "They _____ smart students in class 6A.",
+                translate: "Mereka adalah murid-murid yang pintar di kelas 6A.",
+                options: ["is", "am", "are", "was"],
+                answer: "are",
+                icon: "🎓"
+            },
+            {
+                id: 4,
+                question: "My sister _____ not lazy, she is very active.",
+                translate: "Saudara perempuanku tidak malas, dia sangat aktif.",
+                options: ["is", "are", "am", "do"],
+                answer: "is",
+                icon: "👧"
+            },
+            {
+                id: 5,
+                question: "_____ your mother a kind person?",
+                translate: "Apakah ibumu seorang yang baik hati?",
+                options: ["Are", "Is", "Am", "Do"],
+                answer: "Is",
+                icon: "👩"
+            },
+            {
+                id: 6,
+                question: "The baby _____ small and funny.",
+                translate: "Bayi itu kecil dan lucu.",
+                options: ["are", "am", "is", "were"],
+                answer: "is",
+                icon: "👶"
+            },
+            {
+                id: 7,
+                question: "We _____ not sad today.",
+                translate: "Kami tidak sedih hari ini.",
+                options: ["is", "are", "am", "not"],
+                answer: "are",
+                icon: "😃"
+            },
+            {
+                id: 8,
+                question: "_____ you a student of Grade 6B?",
+                translate: "Apakah kamu seorang siswa Kelas 6B?",
+                options: ["Is", "Am", "Are", "Does"],
+                answer: "Are",
+                icon: "🏫"
+            },
+            {
+                id: 9,
+                question: "My brother is tall, but I _____ short.",
+                translate: "Saudara laki-lakiku tinggi, tetapi saya pendek.",
+                options: ["is", "are", "am", "be"],
+                answer: "am",
+                icon: "📏"
+            },
+            {
+                id: 10,
+                question: "The principal _____ beautiful and smart.",
+                translate: "Kepala sekolah itu cantik dan pintar.",
+                options: ["is", "are", "am", "were"],
+                answer: "is",
+                icon: "🏫"
+            },
+            {
+                id: 11,
+                question: "Budi and Doni _____ good friends.",
+                translate: "Budi dan Doni adalah teman baik.",
+                options: ["is", "am", "are", "be"],
+                answer: "are",
+                icon: "🤝"
+            },
+            {
+                id: 12,
+                question: "The elephant _____ big, but the cat is small.",
+                translate: "Gajah itu besar, tetapi kucing itu kecil.",
+                options: ["are", "is", "am", "were"],
+                answer: "is",
+                icon: "🐘"
+            },
+            {
+                id: 13,
+                question: "_____ I handsome in this jacket?",
+                translate: "Apakah saya tampan menggunakan jaket ini?",
+                options: ["Is", "Are", "Am", "Do"],
+                answer: "Am",
+                icon: "😎"
+            },
+            {
+                id: 14,
+                question: "My friends _____ not lazy at school.",
+                translate: "Teman-temanku tidak malas di sekolah.",
+                options: ["is", "am", "are", "was"],
+                answer: "are",
+                icon: "👥"
+            },
+            {
+                id: 15,
+                question: "She _____ a kind teacher.",
+                translate: "Dia adalah seorang guru yang baik hati.",
+                options: ["are", "am", "is", "be"],
+                answer: "is",
+                icon: "👩‍🏫"
+            }
+        ];
+
+        let userData = {
+            nama: '',
+            kelas: ''
+        };
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+
+        // App Navigation
+        function showScreen(screenId) {
+            const screens = ['screen-login', 'screen-materi', 'screen-game', 'screen-result'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+        }
+
+        // Login Handler
+        function submitLogin(e) {
+            e.preventDefault();
+            const namaInput = document.getElementById('input-nama').value.trim();
+            const kelasInput = document.querySelector('input[name="kelas"]:checked')?.value;
+
+            if (!namaInput || !kelasInput) return;
+
+            userData.nama = namaInput;
+            userData.kelas = kelasInput;
+
+            enterFullscreen();
+            document.getElementById('user-tag').innerText = `${userData.nama} - ${userData.kelas}`;
+            showScreen('screen-materi');
+        }
+
+        // Start Quiz Game
+        function startGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            showScreen('screen-game');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questionsData[currentQuestionIndex];
+            
+            document.getElementById('question-counter').innerText = `Soal ${currentQuestionIndex + 1} dari ${questionsData.length}`;
+            document.getElementById('score-text').innerText = score;
+            
+            // Update progress bar
+            const progressPercent = ((currentQuestionIndex) / questionsData.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            document.getElementById('question-icon').innerText = q.icon;
+            document.getElementById('question-text').innerText = q.question;
+            document.getElementById('question-translate').innerText = `(${q.translate})`;
+
+            const banner = document.getElementById('feedback-banner');
+            banner.className = "hidden mt-6 p-4 rounded-2xl text-center font-bold text-lg transition-all duration-300";
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "p-5 bg-white border-2 border-slate-200 hover:border-brandBlue hover:bg-sky-50 rounded-2xl heading-font text-xl text-slate-800 shadow-sm transition-all duration-200 btn-bounce text-center flex items-center justify-center gap-2";
+                btn.onclick = () => checkAnswer(opt, btn);
+                btn.innerHTML = `<span>${opt}</span>`;
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedOption, clickedBtn) {
+            const q = questionsData[currentQuestionIndex];
+            const isCorrect = selectedOption.toLowerCase() === q.answer.toLowerCase();
+
+            // Disable all option buttons
+            const buttons = document.querySelectorAll('#options-container button');
+            buttons.forEach(b => b.disabled = true);
+
+            const banner = document.getElementById('feedback-banner');
+            banner.classList.remove('hidden');
+
+            if (isCorrect) {
+                playSound('correct');
+                score += 10;
+                document.getElementById('score-text').innerText = score;
+
+                clickedBtn.classList.remove('border-slate-200', 'hover:border-brandBlue', 'hover:bg-sky-50');
+                clickedBtn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600');
+                clickedBtn.innerHTML += ` ✅`;
+
+                banner.className = "mt-6 p-4 rounded-2xl text-center heading-font font-bold text-lg bg-emerald-100 text-emerald-800 border-2 border-emerald-300";
+                banner.innerHTML = "🎉 Luar Biasa! Jawabanmu Tepat!";
+            } else {
+                playSound('wrong');
+
+                clickedBtn.classList.remove('border-slate-200');
+                clickedBtn.classList.add('bg-rose-500', 'text-white', 'border-rose-600');
+                clickedBtn.innerHTML += ` ❌`;
+
+                // Highlight correct button
+                buttons.forEach(b => {
+                    if (b.innerText.trim().toLowerCase() === q.answer.toLowerCase()) {
+                        b.classList.add('bg-emerald-100', 'border-emerald-400', 'text-emerald-800');
+                    }
+                });
+
+                banner.className = "mt-6 p-4 rounded-2xl text-center heading-font font-bold text-lg bg-rose-100 text-rose-800 border-2 border-rose-300";
+                banner.innerHTML = `😅 Jawaban tepatnya adalah: <b>${q.answer}</b>`;
+            }
+
+            userAnswers.push({
+                questionId: q.id,
+                question: q.question,
+                selected: selectedOption,
+                correctAnswer: q.answer,
+                isCorrect: isCorrect
+            });
+
+            // Next Question Delay
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questionsData.length) {
+                    loadQuestion();
+                } else {
+                    finishGame();
+                }
+            }, 1600);
+        }
+
+        function finishGame() {
+            playSound('win');
+            triggerConfetti();
+
+            showScreen('screen-result');
+
+            const maxScore = questionsData.length * 10;
+            const finalScore = Math.round((score / maxScore) * 100);
+            const correctCount = userAnswers.filter(a => a.isCorrect).length;
+            const wrongCount = userAnswers.length - correctCount;
+
+            document.getElementById('res-nama').innerText = userData.nama;
+            document.getElementById('res-kelas').innerText = userData.kelas;
+            document.getElementById('res-skor').innerText = `${finalScore}/100`;
+            document.getElementById('res-benar').innerText = correctCount;
+            document.getElementById('res-salah').innerText = wrongCount;
+
+            let predikat = "Bintang Belajar ⭐";
+            let emoji = "👏";
+
+            if (finalScore >= 90) {
+                predikat = "Bintang Utama ⭐⭐⭐";
+                emoji = "🏆";
+            } else if (finalScore >= 70) {
+                predikat = "Bintang Hebat ⭐⭐";
+                emoji = "🌟";
+            }
+
+            document.getElementById('res-predikat').innerText = predikat;
+            document.getElementById('result-badge-emoji').innerText = emoji;
+
+            const lastCodeObj = {n: userData.nama, k: userData.kelas, s: finalScore, b: correctCount, w: wrongCount, t: Date.now(), a: userAnswers.map(a => a.questionId + ':' + (a.isCorrect ? 1 : 0))};
+            const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(lastCodeObj)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+            lastCode = 'EA1-' + b64 + '-' + chk(b64);
+            lastScore = finalScore;
+            document.getElementById('result-code').value = lastCode;
+        }
+
+        let lastCode = '', lastScore = 0;
+        function chk(str) { let h = 7; str = 'EA6-guru' + str; for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0; return h.toString(36); }
+        function sendWA() {
+            const t = `Hasil English Adventure\nNama: ${userData.nama}\nKelas: ${userData.kelas}\nSkor: ${lastScore}/100\n\nKODE:\n${lastCode}`;
+            window.open('https://wa.me/6285357959694?text=' + encodeURIComponent(t), '_blank');
+        }
+        function copyCode(btn) {
+            const ta = document.getElementById('result-code');
+            ta.select();
+            let ok = false;
+            try { document.execCommand('copy'); ok = true; } catch (e) {}
+            if (navigator.clipboard) { navigator.clipboard.writeText(lastCode).then(() => {}, () => {}); }
+            const old = btn.innerHTML;
+            btn.innerHTML = '✔ Tersalin!';
+            setTimeout(() => { btn.innerHTML = old; }, 2000);
+        }
+
+        // Modal Rincian Jawaban
+        function toggleDetailAnswerModal() {
+            const modal = document.getElementById('modal-details');
+            if (modal.classList.contains('hidden')) {
+                const container = document.getElementById('modal-details-content');
+                container.innerHTML = '';
+
+                userAnswers.forEach((ans, idx) => {
+                    const item = document.createElement('div');
+                    item.className = `p-4 rounded-2xl border-2 ${ans.isCorrect ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200'}`;
+                    item.innerHTML = `
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-slate-700 text-sm">Soal #${idx + 1}</span>
+                            <span class="text-xs font-bold px-2 py-0.5 rounded-md ${ans.isCorrect ? 'bg-emerald-200 text-emerald-800' : 'bg-rose-200 text-rose-800'}">
+                                ${ans.isCorrect ? 'BENAR' : 'SALAH'}
+                            </span>
+                        </div>
+                        <p class="font-semibold text-slate-800 text-base mb-2">${ans.question}</p>
+                        <div class="text-xs space-y-0.5">
+                            <p class="text-slate-600">Jawaban Kamu: <b class="${ans.isCorrect ? 'text-emerald-700' : 'text-rose-700'}">${ans.selected}</b></p>
+                            ${!ans.isCorrect ? `<p class="text-slate-600">Jawaban Tepat: <b class="text-emerald-700">${ans.correctAnswer}</b></p>` : ''}
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function resetGame() {
+            showScreen('screen-login');
+        }
+
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const numberOfPieces = 100;
+            const colors = ['#FFD166', '#06D6A0', '#118AB2', '#EF476F', '#8338EC'];
+
+            for (let i = 0; i < numberOfPieces; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 10 + 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 3 + 2,
+                    rotation: Math.random() * 360
+                });
+            }
+
+            let animationFrame;
+            function updateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                pieces.forEach(p => {
+                    p.y += p.speed;
+                    p.rotation += 2;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+
+                    if (p.y > canvas.height) {
+                        p.y = -20;
+                    }
+                });
+
+                animationFrame = requestAnimationFrame(updateConfetti);
+            }
+
+            updateConfetti();
+
+            setTimeout(() => {
+                cancelAnimationFrame(animationFrame);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }, 4000);
+        }
+
+            </script>
+</body>
+</html>
